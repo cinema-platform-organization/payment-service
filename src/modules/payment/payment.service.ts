@@ -13,7 +13,9 @@ import { PaymentStatus } from "@generated/enums";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { RpcException } from "@nestjs/microservices";
+import { lastValueFrom } from "rxjs";
 
+import { BookingClientGrpc } from "@/clients/booking.client";
 import { LiqpayService } from "@/infrastructure/liqpay/liqpay.service";
 
 import {
@@ -33,6 +35,7 @@ export class PaymentService {
 		private readonly repository: PaymentRepository,
 		private readonly configService: ConfigService,
 		private readonly liqpayService: LiqpayService,
+		private readonly bookingClient: BookingClientGrpc,
 	) {
 		this.HOSTS_APP = this.configService.getOrThrow<string>("HOSTS_APP");
 		this.API_URL = this.configService.getOrThrow<string>("API_URL");
@@ -45,12 +48,16 @@ export class PaymentService {
 	): Promise<CreatePaymentResponse> {
 		const { userId, screeningId, seats, savePaymentMethod } = data;
 
-		const amount = seats.reduce((sum, seat) => {
-			return sum + seat.price;
-		}, 0);
+		const reservation = await lastValueFrom(
+			this.bookingClient.createReservation({
+				userId,
+				screeningId,
+				seats,
+			}),
+		);
 
 		const transaction = await this.repository.createPayment({
-			amount,
+			amount: reservation.amount,
 			userId,
 			providerId: "LIQPAY", // Not sure, but might add another payment provider
 		});
@@ -61,7 +68,7 @@ export class PaymentService {
 			description: `Payment for tickets to screening ${screeningId}`,
 			order_id: transaction.id,
 			customer: userId,
-			info: "bookingId", // Will come from bookings service later
+			info: reservation.orderId,
 			server_url: `${this.API_URL}/webhook/liqpay`,
 			result_url: `${this.HOSTS_APP}/account/tickets`,
 			sandbox: this.SANDBOX,
@@ -110,6 +117,7 @@ export class PaymentService {
 			providerMethodId,
 			cardMask,
 			cardToken,
+			userId,
 		} = data;
 
 		const payment = await this.repository.findPaymentById(paymentId);
@@ -140,6 +148,19 @@ export class PaymentService {
 			}
 
 			await this.repository.updatePayment(payment.id, updateData);
+
+			try {
+				await lastValueFrom(
+					this.bookingClient.confirmBooking({
+						bookingId,
+						userId,
+					}),
+				);
+			} catch (error) {
+				console.error("Failed to call booking.confirmBooking: ", error);
+
+				throw error;
+			}
 		} else if (isFailureStatus(status)) {
 			await this.repository.updatePayment(payment.id, {
 				status: PaymentStatus.FAILED,
@@ -179,6 +200,20 @@ export class PaymentService {
 			await this.repository.updatePayment(payment.id, {
 				status: PaymentStatus.REFUNDED,
 			});
+
+			if (!payment.bookingId || !payment.userId) {
+				throw new RpcException({
+					code: RpcStatus.FAILED_PRECONDITION,
+					details: "Payment is missing booking or user reference",
+				});
+			}
+
+			await lastValueFrom(
+				this.bookingClient.cancelBooking({
+					bookingId: payment.bookingId,
+					userId: payment.userId,
+				}),
+			);
 
 			return { ok: true };
 		}

@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@cinema-platform/common':
-        specifier: ^1.2.4
-        version: 1.2.4(@grpc/grpc-js@1.14.4)(@nestjs/platform-express@11.2.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
+        specifier: ^1.2.5
+        version: 1.2.5(@grpc/grpc-js@1.14.4)(@nestjs/platform-express@11.2.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@cinema-platform/contracts':
-        specifier: ^1.4.3
-        version: 1.4.3(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3)(reflect-metadata@0.2.2)
+        specifier: ^1.4.5
+        version: 1.4.5(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3)(reflect-metadata@0.2.2)
       '@cinema-platform/core':
         specifier: ^1.0.4
         version: 1.0.4(@trivago/prettier-plugin-sort-imports@5.2.2(prettier@3.9.6))(prettier@3.9.6)
@@ -337,11 +337,11 @@ packages:
   '@bufbuild/protobuf@2.14.1':
     resolution: {integrity: sha512-agRJn3+EJDUe8AvxTx/LnHA/GErvLE62pSaSk7+MwFOtOv8eWBu/qCq2qoZjBjVZ3C2aiFJCveuSs17KMkYGOw==}
 
-  '@cinema-platform/common@1.2.4':
-    resolution: {integrity: sha512-8SIxXqjXu6czPq5L61SxUJCM+xuM3eNYs23XR4jlV88BS874DFxnSjmpoD4c3s9RkHM5iCSA5bVJuTOmRWHTlQ==}
+  '@cinema-platform/common@1.2.5':
+    resolution: {integrity: sha512-qmFpqLbZfoThAJRDCEoeZzXmzYtZWv1j+3O/j8mYXxOCaq+u/rrO9SXC8+HKlkVKQ//bhNiZHjpGgRyLJyzD1w==}
 
-  '@cinema-platform/contracts@1.4.3':
-    resolution: {integrity: sha512-DMkdvrhz3LwcBCZL+0tl7nItuzwGjOLYFJdfcrEc8u7kEXSp6rVhcQP9vpTJilZmR3kByp2SpZJQUOku7HGHXA==}
+  '@cinema-platform/contracts@1.4.5':
+    resolution: {integrity: sha512-LrpGYiZVtQ9oeghCy2kFtJ80GOJmcpdToJF/Zsg3wJyKc8OzuIHUg4khELwGMzrJXRUsfwWnuMp9FkdPx8oUjQ==}
 
   '@cinema-platform/core@1.0.4':
     resolution: {integrity: sha512-EzmBoZhLbfBIJPfjaKPHl0r5Yy2UK1yzKHYXZn2Y5Ar8yF0yBilJ1xXcK1udFr0pMJh6lHox4QxYltlmvDR7gg==}
@@ -4061,9 +4061,9 @@ snapshots:
 
   '@bufbuild/protobuf@2.14.1': {}
 
-  '@cinema-platform/common@1.2.4(@grpc/grpc-js@1.14.4)(@nestjs/platform-express@11.2.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
+  '@cinema-platform/common@1.2.5(@grpc/grpc-js@1.14.4)(@nestjs/platform-express@11.2.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)':
     dependencies:
-      '@cinema-platform/contracts': 1.4.3(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)
+      '@cinema-platform/contracts': 1.4.5(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)
       '@nestjs/common': 11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/config': 12.0.0(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
       '@nestjs/core': 11.2.1(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/microservices@11.2.3)(@nestjs/platform-express@11.2.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -4085,7 +4085,7 @@ snapshots:
       - rxjs
       - supports-color
 
-  '@cinema-platform/contracts@1.4.3(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)':
+  '@cinema-platform/contracts@1.4.5(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)':
     dependencies:
       '@nestjs/microservices': 11.2.3(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       rxjs: 7.8.2
@@ -4104,7 +4104,7 @@ snapshots:
       - nats
       - reflect-metadata
 
-  '@cinema-platform/contracts@1.4.3(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3)(reflect-metadata@0.2.2)':
+  '@cinema-platform/contracts@1.4.5(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3)(reflect-metadata@0.2.2)':
     dependencies:
       '@nestjs/microservices': 11.2.3(@grpc/grpc-js@1.14.4)(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       rxjs: 7.8.2
