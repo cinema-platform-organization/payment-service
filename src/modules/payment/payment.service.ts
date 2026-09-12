@@ -13,7 +13,7 @@ import { PaymentStatus } from "@generated/enums";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { RpcException } from "@nestjs/microservices";
-import { lastValueFrom } from "rxjs";
+import { PinoLogger } from "nestjs-pino";
 
 import { BookingClientGrpc } from "@/clients/booking.client";
 import { LiqpayService } from "@/infrastructure/liqpay/liqpay.service";
@@ -32,11 +32,13 @@ export class PaymentService {
 	private readonly SANDBOX: 0 | 1 | undefined;
 
 	public constructor(
+		private readonly logger: PinoLogger,
 		private readonly repository: PaymentRepository,
 		private readonly configService: ConfigService,
 		private readonly liqpayService: LiqpayService,
 		private readonly bookingClient: BookingClientGrpc,
 	) {
+		this.logger.setContext(PaymentService.name);
 		this.HOSTS_APP = this.configService.getOrThrow<string>("HOSTS_APP");
 		this.API_URL = this.configService.getOrThrow<string>("API_URL");
 		this.SANDBOX =
@@ -48,18 +50,16 @@ export class PaymentService {
 	): Promise<CreatePaymentResponse> {
 		const { userId, screeningId, seats, savePaymentMethod } = data;
 
-		const reservation = await lastValueFrom(
-			this.bookingClient.createReservation({
-				userId,
-				screeningId,
-				seats,
-			}),
-		);
+		const reservation = await this.bookingClient.createReservation({
+			userId,
+			screeningId,
+			seats,
+		});
 
 		const transaction = await this.repository.createPayment({
 			amount: reservation.amount,
 			userId,
-			providerId: "LIQPAY", // Not sure, but might add another payment provider
+			providerId: "LIQPAY",
 		});
 
 		const url = this.liqpayService.createPaymentUrl({
@@ -149,18 +149,10 @@ export class PaymentService {
 
 			await this.repository.updatePayment(payment.id, updateData);
 
-			try {
-				await lastValueFrom(
-					this.bookingClient.confirmBooking({
-						bookingId,
-						userId,
-					}),
-				);
-			} catch (error) {
-				console.error("Failed to call booking.confirmBooking: ", error);
-
-				throw error;
-			}
+			await this.bookingClient.confirmBooking({
+				bookingId,
+				userId,
+			});
 		} else if (isFailureStatus(status)) {
 			await this.repository.updatePayment(payment.id, {
 				status: PaymentStatus.FAILED,
@@ -208,12 +200,10 @@ export class PaymentService {
 				});
 			}
 
-			await lastValueFrom(
-				this.bookingClient.cancelBooking({
-					bookingId: payment.bookingId,
-					userId: payment.userId,
-				}),
-			);
+			await this.bookingClient.cancelBooking({
+				bookingId: payment.bookingId,
+				userId: payment.userId,
+			});
 
 			return { ok: true };
 		}

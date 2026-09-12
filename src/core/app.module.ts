@@ -2,6 +2,7 @@ import { PROTO_PATHS } from "@cinema-platform/contracts";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from "@nestjs/microservices";
+import { LoggerModule } from "nestjs-pino";
 
 import { LiqpayModule } from "@/infrastructure/liqpay/liqpay.module";
 import { PrismaModule } from "@/infrastructure/prisma/prisma.module";
@@ -26,6 +27,7 @@ import { PaymentModule } from "@/modules/payment/payment.module";
 				inject: [ConfigService],
 			},
 		]),
+		LoggerModule.forRoot(),
 		PrismaModule,
 		PaymentModule,
 		LiqpayModule,
