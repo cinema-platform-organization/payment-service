@@ -165,9 +165,9 @@ export class PaymentService {
 	public async refundPayment(
 		data: RefundPaymentRequest,
 	): Promise<RefundPaymentResponse> {
-		const { paymentId } = data;
+		const { bookingId } = data;
 
-		const payment = await this.repository.findPaymentById(paymentId);
+		const payment = await this.repository.findPaymentByBookingId(bookingId);
 
 		if (!payment) {
 			throw new RpcException({
@@ -183,6 +183,18 @@ export class PaymentService {
 			});
 		}
 
+		if (!payment.bookingId || !payment.userId) {
+			throw new RpcException({
+				code: RpcStatus.FAILED_PRECONDITION,
+				details: "Payment is missing booking or user reference",
+			});
+		}
+
+		await this.bookingClient.cancelBooking({
+			bookingId: payment.bookingId,
+			userId: payment.userId,
+		});
+
 		const response = await this.liqpayService.refundPayment({
 			orderId: payment.id,
 			amount: payment.amount,
@@ -191,18 +203,6 @@ export class PaymentService {
 		if (isRefundSuccessStatus(response.status)) {
 			await this.repository.updatePayment(payment.id, {
 				status: PaymentStatus.REFUNDED,
-			});
-
-			if (!payment.bookingId || !payment.userId) {
-				throw new RpcException({
-					code: RpcStatus.FAILED_PRECONDITION,
-					details: "Payment is missing booking or user reference",
-				});
-			}
-
-			await this.bookingClient.cancelBooking({
-				bookingId: payment.bookingId,
-				userId: payment.userId,
 			});
 
 			return { ok: true };

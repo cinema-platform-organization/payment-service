@@ -15,6 +15,14 @@ export class PaymentRepository {
 		});
 	}
 
+	public findPaymentByBookingId(bookingId: string) {
+		return this.prismaService.payment.findFirst({
+			where: {
+				bookingId,
+			},
+		});
+	}
+
 	public createPayment(data: Prisma.PaymentCreateInput) {
 		return this.prismaService.payment.create({ data });
 	}

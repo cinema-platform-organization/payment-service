@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@cinema-platform/common": "^1.2.5",
-		"@cinema-platform/contracts": "^1.4.5",
+		"@cinema-platform/contracts": "^1.5.1",
 		"@cinema-platform/core": "^1.0.4",
 		"@grpc/grpc-js": "^1.14.4",
 		"@grpc/proto-loader": "^0.8.1",
