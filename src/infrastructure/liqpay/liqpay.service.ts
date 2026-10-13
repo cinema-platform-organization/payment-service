@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
 import { LiqpayCryptoProvider } from "./liqpay-crypto.provider";
 
@@ -40,6 +40,8 @@ interface LiqpayRefundResponse {
 
 @Injectable()
 export class LiqpayService {
+	private readonly logger = new Logger(LiqpayService.name);
+
 	private readonly checkoutUrl = "https://www.liqpay.ua/api/3/checkout";
 	private readonly apiUrl = "https://www.liqpay.ua/api/request";
 
@@ -81,13 +83,31 @@ export class LiqpayService {
 		formData.append("data", data);
 		formData.append("signature", signature);
 
-		const response = await fetch(this.apiUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			body: formData.toString(),
-		});
+		let response: Response;
+
+		try {
+			response = await fetch(this.apiUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+				body: formData.toString(),
+			});
+		} catch (error) {
+			this.logger.error(
+				{ err: error as Error, action: payload.action },
+				"LiqPay request failed",
+			);
+			throw error;
+		}
+
+		if (!response.ok) {
+			this.logger.error(
+				{ action: payload.action, status: response.status },
+				"LiqPay returned non-OK HTTP status",
+			);
+			throw new Error(`LiqPay HTTP ${response.status}`);
+		}
 
 		return (await response.json()) as T;
 	}

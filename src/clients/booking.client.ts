@@ -1,26 +1,23 @@
-import { RpcStatus } from "@cinema-platform/common";
+import { toRpcException } from "@cinema-platform/common";
 import type {
 	BookingServiceClient,
 	CancelBookingRequest,
 	ConfirmBookingRequest,
 	CreateReservationRequest,
 } from "@cinema-platform/contracts/gen/ts/booking";
-import { Inject, Injectable, type OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, Logger, type OnModuleInit } from "@nestjs/common";
 import type { ClientGrpc } from "@nestjs/microservices";
-import { RpcException } from "@nestjs/microservices";
-import { PinoLogger } from "nestjs-pino";
 import { lastValueFrom } from "rxjs";
 
 @Injectable()
 export class BookingClientGrpc implements OnModuleInit {
+	private readonly logger = new Logger(BookingClientGrpc.name);
+
 	private bookingService!: BookingServiceClient;
 
 	public constructor(
-		private readonly logger: PinoLogger,
 		@Inject("BOOKING_PACKAGE") private readonly client: ClientGrpc,
-	) {
-		this.logger.setContext(BookingClientGrpc.name);
-	}
+	) {}
 
 	public onModuleInit() {
 		this.bookingService =
@@ -33,15 +30,15 @@ export class BookingClientGrpc implements OnModuleInit {
 				this.bookingService.createReservation(request),
 			);
 		} catch (error) {
-			if (error instanceof RpcException) {
-				throw error;
-			}
-
-			this.logger.error("Failed to create reservation:", error);
-			throw new RpcException({
-				code: RpcStatus.INTERNAL,
-				details: "Failed to create reservation",
-			});
+			this.logger.error(
+				{
+					err: error as Error,
+					userId: request.userId,
+					screeningId: request.screeningId,
+				},
+				"Failed to create reservation",
+			);
+			throw toRpcException(error, "Failed to create reservation");
 		}
 	}
 
@@ -51,15 +48,11 @@ export class BookingClientGrpc implements OnModuleInit {
 				this.bookingService.confirmBooking(data),
 			);
 		} catch (error) {
-			if (error instanceof RpcException) {
-				throw error;
-			}
-
-			this.logger.error("Failed to confirm booking:", error);
-			throw new RpcException({
-				code: RpcStatus.INTERNAL,
-				details: "Failed to confirm booking",
-			});
+			this.logger.error(
+				{ err: error as Error, bookingId: data.bookingId },
+				"Failed to confirm booking",
+			);
+			throw toRpcException(error, "Failed to confirm booking");
 		}
 	}
 
@@ -67,15 +60,11 @@ export class BookingClientGrpc implements OnModuleInit {
 		try {
 			return await lastValueFrom(this.bookingService.cancelBooking(data));
 		} catch (error) {
-			if (error instanceof RpcException) {
-				throw error;
-			}
-
-			this.logger.error("Failed to cancel booking:", error);
-			throw new RpcException({
-				code: RpcStatus.INTERNAL,
-				details: "Failed to cancel booking",
-			});
+			this.logger.error(
+				{ err: error as Error, bookingId: data.bookingId },
+				"Failed to cancel booking",
+			);
+			throw toRpcException(error, "Failed to cancel booking");
 		}
 	}
 }
