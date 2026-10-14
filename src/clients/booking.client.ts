@@ -38,6 +38,7 @@ export class BookingClientGrpc implements OnModuleInit {
 				},
 				"Failed to create reservation",
 			);
+
 			throw toRpcException(error, "Failed to create reservation");
 		}
 	}
@@ -52,6 +53,7 @@ export class BookingClientGrpc implements OnModuleInit {
 				{ err: error as Error, bookingId: data.bookingId },
 				"Failed to confirm booking",
 			);
+
 			throw toRpcException(error, "Failed to confirm booking");
 		}
 	}
@@ -64,6 +66,7 @@ export class BookingClientGrpc implements OnModuleInit {
 				{ err: error as Error, bookingId: data.bookingId },
 				"Failed to cancel booking",
 			);
+
 			throw toRpcException(error, "Failed to cancel booking");
 		}
 	}

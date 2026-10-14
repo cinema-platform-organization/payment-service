@@ -98,6 +98,7 @@ export class LiqpayService {
 				{ err: error as Error, action: payload.action },
 				"LiqPay request failed",
 			);
+
 			throw error;
 		}
 
@@ -106,6 +107,7 @@ export class LiqpayService {
 				{ action: payload.action, status: response.status },
 				"LiqPay returned non-OK HTTP status",
 			);
+
 			throw new Error(`LiqPay HTTP ${response.status}`);
 		}
 

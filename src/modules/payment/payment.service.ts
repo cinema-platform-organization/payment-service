@@ -327,7 +327,6 @@ export class PaymentService {
 			});
 		}
 
-		// Cancel first: booking owns the cutoff and ownership rules
 		await this.bookingClient.cancelBooking({
 			bookingId: payment.bookingId,
 			userId: payment.userId,
